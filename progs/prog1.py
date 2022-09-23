@@ -40,7 +40,6 @@ def prog1(folder1):
                             m = i
             rawDTVtable = data_tables[m]
             # добавим сведения о файле в таблицу
-            # print(fullpathtodocxfile)
             docxname = str(os.path.basename(fullpathtodocxfile)).replace(SS, ss)
             prop_list = [docxname, properties.author, properties.last_modified_by, properties.created,
                          properties.modified,
@@ -69,7 +68,6 @@ def prog1(folder1):
         DTVtable.extend(raw_DTV_table_from_docx(val))
     # Удаляем лишние строки и столбцы по условию и создаем дубликат столбца
     DTVtable = [[DTVtable[i][j] for j in (0, 3, 4, 4, 5, 6, 7, 8, 9, 10, 11)] for i in range(0, (len(DTVtable)))]
-    # print(DTVtable)
     # фильтр регуляркой, оставляем только сочетания:
     for i in range(0, len(DTVtable)):
         result = re.findall(r"(\wзвле.*(\d){1,6}.{1,4}( л|л |л.ж|кг|тв|жид))", DTVtable[i][2], flags=re.IGNORECASE)
@@ -116,7 +114,6 @@ def prog1(folder1):
     # обработка столбца 4 с работником (удаление повторяющихся значений и лишних пробелов, переносов строк)
     for i in range(0, len(DTVtable)):
         DTVtable[i][4] = str((re.sub(r'\b([^_]+)(\s+\1)+\b', r"\1", (re.sub('\\n', " ", str(DTVtable[i][4])))).strip()))
-    # print(DTVtable)
 
     # находим даты в столбце с извлечением и вносим отдельными столбцами в таблицу
     for i in range(0, (len(DTVtable))):
@@ -159,7 +156,6 @@ def prog1(folder1):
                             r"[\d,\.]{1,6}(?=[\D\s]{0,3}л)", DTVtable[i][6], flags=re.IGNORECASE)
         if result and DTVtable[i][9] == 'Кол-во жидкого не определено':
             DTVtable[i][9] = sum(Decimal(x) for x in [str(x).replace(",", ".") for x in result])
-    # print(DTVtable[0][19])
     # меняем порядок расположения столбцов:
 
     DTVtable = [[DTVtable[i][j] for j in (0, 2, 4, 7, 8, 6, 13, 15, 16, 17, 18, 9, 12, 3, 19)] for i in
@@ -169,27 +165,25 @@ def prog1(folder1):
     # добавляем столбец с нумерацией
     for i in range(0, (len(DTVtable))):
         DTVtable[i].insert(0, i + 1)
-    # print(DTVtable)
-
     # cоздаем таблицу для журнала
     jtable = [[DTVtable[i][j] for j in (4, 1, 2, 5)] for i in range(0, (len(DTVtable)))]
     # print(jtable)
     for i in range(0, (len(jtable))):
         jtable[i].insert(1, (jtable[i][0]).date())
-    # print(jtable)
+
     jtable = [[jtable[i][j] for j in (1, 2, 3, 4)] for i in range(0, (len(jtable)))]
 
     key = lambda item: (item[0], item[1], item[2])
     keys = set(map(key, jtable))
     jtable_out = [[k[0], k[1], k[2], sum(Decimal(n[3]) for n in jtable if k == key(n))] for k in keys]
     jtable = jtable_out
-    # print(jtable)
+
     # сортируем по возрастанию даты
     jtable.sort(key=lambda x: x[0])
+
     # добавляем столбец с нумерацией
-    # print(jtable)
     m = str(jtable[-1][0].month)
-    # print(m)
+
     for i in range(0, (len(jtable))):
         jtable[i].insert(0, i + 1)
         jtable[i].insert(-1, f'{m}-{str(jtable[i][0])}')
@@ -204,7 +198,7 @@ def prog1(folder1):
     sum_jtable = sum([jtable[i][4] for i in range(0, (len(jtable)))])
     for i in range(0, (len(jtable))):
         jtable[i][6] = f'{m}-{str(jtable[i][0])}'
-    # print(sum_jtable)
+
     Jtable_itog = [
         ["", "", "", "Итого за месяц:", sum_jtable, sum_jtable, "", "", "", sum_jtable, sum_jtable, "", "", "", "", "",
          "", "0,000", "0,000"]]
@@ -259,10 +253,9 @@ def prog1(folder1):
                     badcell == 'Не определено наименование участка МН' or badcell == 'Кол-во твердого не определено':
                 for j in range(1, 16):
                     ws.cell(row=n, column=j).fill = PatternFill('solid', fgColor="D97147")
-        # print(n)
         ws.delete_cols(16)
     tab = Table(displayName="Сводка", ref=f"A1:{ws.cell(row=ws.max_row, column=ws.max_column).coordinate}")
-    # print(ws['E2'].value)
+
     ws.column_dimensions['A'].width = 6
     ws.column_dimensions['B'].width = 14
     ws.column_dimensions['C'].width = 35
