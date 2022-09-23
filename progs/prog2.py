@@ -102,21 +102,9 @@ def prog2(fullpathtoxlsxfile):
         ws.delete_cols(16)
     tab = Table(displayName="VTD", ref=f"A1:{ws.cell(row=ws.max_row, column=ws.max_column).coordinate}")
     # print(ws['E2'].value)
-    ws.column_dimensions['A'].width = 6
-    ws.column_dimensions['B'].width = 14
-    ws.column_dimensions['C'].width = 35
-    ws.column_dimensions['D'].width = 25
-    ws.column_dimensions['E'].width = 15
-    ws.column_dimensions['F'].width = 10
-    ws.column_dimensions['G'].width = 55
-    ws.column_dimensions['H'].width = 15
-    ws.column_dimensions['I'].width = 15
-    ws.column_dimensions['J'].width = 15
-    ws.column_dimensions['K'].width = 15
-    ws.column_dimensions['L'].width = 15
-    ws.column_dimensions['M'].width = 10
-    ws.column_dimensions['N'].width = 17
-    ws.column_dimensions['O'].width = 42
+    width=(6,14,35,25,15,10,55,15,15,15,15,15,10,17,42)
+    for i,val in enumerate(width, 1):
+        ws.column_dimensions[chr(i+64)].width = val
 
     style = TableStyleInfo(name="TableStyleLight9", showFirstColumn=False,
                            showLastColumn=False, showRowStripes=True, showColumnStripes=True)
