@@ -2,7 +2,8 @@ import os
 from prog1 import prog1
 from prog2 import prog2
 from prog3 import prog3
-from konfs.konfs import labels
+from prog4 import prog4
+from konfs.konfs import labels, getter
 
 import wx
 
@@ -11,6 +12,7 @@ class MyFrame(wx.Frame):
     def __init__(self):
         self.folder = None
         self.pathname = None
+        self.archive = None
         self.default_svodki_path = r"..\1_Сводки"
         self.defaultActPath = r"..\2_Журнал_и_акты"
         no_resize = wx.DEFAULT_FRAME_STYLE & ~ (wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
@@ -38,6 +40,8 @@ class MyFrame(wx.Frame):
         my_btn1.Bind(wx.EVT_BUTTON, self.on_press1, id=my_btn1.GetId())
         my_btn = wx.Button(panel, label=labels[3])
         my_btn.Bind(wx.EVT_BUTTON, self.OnSelectFile, id=my_btn.GetId())
+        my_btn5 = wx.Button(panel, label=labels[5])
+        my_btn5.Bind(wx.EVT_BUTTON, self.send_mail, id=my_btn5.GetId())
         m_staticline = wx.StaticLine(panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL)
         my_sizer.Add(m_staticText, 0, wx.ALL, 5)
         my_sizer.Add(my_btn1, 0, wx.ALL | wx.CENTER, 5)
@@ -45,6 +49,7 @@ class MyFrame(wx.Frame):
         my_sizer.Add(my_btn3, 0, wx.ALL | wx.CENTER, 5)
         my_sizer.Add(m_staticline, 0, wx.EXPAND | wx.ALL, 5)
         my_sizer.Add(m_staticText2, 0, wx.ALL, 5)
+        my_sizer.Add(my_btn5, 0, wx.ALL | wx.CENTER, 5)
         my_sizer.Add(my_btn, 0, wx.ALL | wx.CENTER, 5)
         panel.SetSizer(my_sizer)
         self.Show()
@@ -113,11 +118,12 @@ class MyFrame(wx.Frame):
                                     wx.OK)
             dlg1.ShowModal()
             folderacts = prog3(file)
+            self.archive = folderacts[1]
             dlg = wx.MessageBox('Открыть папку с актами?', 'Акты НШЛ созданы',
                                 wx.YES_NO | wx.NO_DEFAULT)
             if dlg == wx.YES:
                 print('Акты НШЛ созданы')
-                os.system(f"explorer.exe {folderacts}")
+                os.system(f"explorer.exe {folderacts[0]}")
 
     def open_xlsx(self, event):  # 'Открыть файл НШЛ'
         file = self.pathname
@@ -128,6 +134,25 @@ class MyFrame(wx.Frame):
             dlg.ShowModal()
         else:
             os.startfile(file)
+
+    def send_mail(self, event):  # 'Открыть файл НШЛ'
+        file = self.archive
+        # print(file)
+        if file is None:
+            dlg = wx.MessageDialog(self, 'Файл архива еще не создан в данном сеансе', 'Уведомление',
+                                   wx.OK | wx.ICON_QUESTION)
+            dlg.ShowModal()
+        else:
+            dlg1 = wx.MessageDialog(self, f'Производится отправка сообщения на адрес {getter}, нажмите ОК и ожидайте завершения', 'Внимание',
+                                    wx.OK)
+            dlg1.ShowModal()
+            prog4(file)
+            dlg = wx.MessageBox('Открыть файл архива?', 'Сообщение отправлено',
+                                wx.YES_NO | wx.NO_DEFAULT)
+            if dlg == wx.YES:
+                print('Открытие архива')
+                os.system(f"explorer.exe {file}")
+
 
 if __name__ == '__main__':
     app = wx.App()
