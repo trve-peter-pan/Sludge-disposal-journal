@@ -92,9 +92,10 @@ def prog3(fullpathtoxlsxfile):
                                  f"Акты_{a[i][0]}_{(table_for_act[-1][1]).date().year}.docx")
         docum = DocxTemplate(r"..\konfs\Шаблоны\Шаблон.docx")
     print("Затрачено времени: %s секунд " % (time.time() - start_time))
-    path_to_acts=os.path.abspath(f"..\\{actdir}")
+    path_to_acts=os.path.abspath(f"{actdir}")
     archive_name=f"..\\3_Архив\\{daterange}.rar"
     root_dir=f"..\\2_Журнал_и_акты"
     rar = rarpath
     os.system(f'{rar} a {archive_name} {root_dir}')
     return path_to_acts, os.path.abspath(archive_name)
+
