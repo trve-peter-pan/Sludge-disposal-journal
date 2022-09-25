@@ -7,7 +7,10 @@ from email.mime.base import MIMEBase
 from konfs.konfs import sender, password, getter
 
 
-def send_email(pathtofile):
+def prog4(pathtofile):
+    """
+    Отправка письма с вложением
+    """
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
     try:
